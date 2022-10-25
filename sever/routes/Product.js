@@ -23,7 +23,7 @@ router.delete("/:id", deleteProduct);
 router.get("/", getAllProduct);
 router.get("/getByBrand", getAllProductByType);
 router.get("/:id", getProduct);
-
+router.get("/find", getProducts);
 //Get All
 
 //Get By Type

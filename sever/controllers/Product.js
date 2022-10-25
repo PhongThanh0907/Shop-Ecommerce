@@ -63,7 +63,7 @@ export const getAllProductByType = async (req, res, next) => {
       brand: {
         $in: brands.split(",").map((b) => mongoose.Types.ObjectId(b)),
       },
-      // price: { $gt: min | 1000, $lt: max | 100000000 },
+      price: { $gt: min | 1000, $lt: max | 10000000 },
     }).limit(req.query.limit);
     res.status(200).json(products);
   } catch (error) {
@@ -74,11 +74,11 @@ export const getAllProductByType = async (req, res, next) => {
 export const getProducts = async (req, res, next) => {
   const { min, max, ...others } = req.query;
   try {
-    const products = await Hotel.find({
+    const products = await Product.find({
       ...others,
       price: { $gt: min, $lt: max },
     }).limit(req.query.limit);
-    res.status(200).json(hotels);
+    res.status(200).json(products);
   } catch (error) {
     res.status(500).json(error);
   }

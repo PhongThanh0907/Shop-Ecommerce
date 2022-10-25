@@ -1,6 +1,8 @@
 import React from "react";
+import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 import product from "../assets/product2.png";
+import { AddCart } from "../features/cartSlice";
 import { Product } from "../interfaces/product";
 import CountDown from "./CountDown";
 interface Props {
@@ -9,6 +11,7 @@ interface Props {
 }
 
 const ItemPromotion = (props: Props) => {
+  const dispatch = useDispatch();
   return (
     <div className="grid grid-cols-2 gap-4 p-4 border-[3px] border-mainColor rounded-xl sm:grid-cols-1">
       <div className="p-4 ">
@@ -42,7 +45,10 @@ const ItemPromotion = (props: Props) => {
           <CountDown hours={3} minutes={59} seconds={10} />
         </div>
         <div className="text-center">
-          <Link to={`/chi-tiet/${props.productID}`}>
+          <Link
+            to={`/chi-tiet/${props.productID}`}
+            onClick={() => dispatch(AddCart(props.item))}
+          >
             <div className="my-2 px-16 py-3 rounded-lg bg-mainColor text-[white] hover:bg-[#0099b1] w-[50%] m-auto">
               MUA NGAY
             </div>

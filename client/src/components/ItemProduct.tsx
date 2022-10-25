@@ -13,7 +13,6 @@ interface Props {
 
 const ItemProduct = (props: Props) => {
   const dispatch = useDispatch();
-  const { cart, total } = useSelector((state: RootState) => state.cart);
   return (
     <div className="style-item-product  hover:shadow-xl hover:border-[#efecec] sm:w-[115px] sm:text-[10px] sm:h-[230px] cursor-pointer">
       <Link to={`/chi-tiet/${props.idProduct}`}>
