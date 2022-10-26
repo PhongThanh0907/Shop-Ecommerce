@@ -1,5 +1,6 @@
 import React from "react";
 import { Route, Routes } from "react-router-dom";
+import NotFound from "./components/NotFound";
 import DetailProduct from "./pages/DetailProduct/DetailProduct";
 import Home from "./pages/HomePage/Home";
 import Login from "./pages/Login/Login";
@@ -21,6 +22,7 @@ function App() {
           <Route path="/gio-hang" element={<ProductCart />} />
           <Route path="/dang-nhap" element={<Login />} />
           <Route path="/dang-ky" element={<Register />} />
+          <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>
     </>

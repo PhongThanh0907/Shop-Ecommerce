@@ -16,6 +16,7 @@ const ProductPage = (props: Props) => {
   const [brandList, setBrandList] = useState<Brand[]>();
   const [valueBrand, setValueBrand] = useState<string[]>([]);
   const [productFilterList, setProductFilterList] = useState<Product[]>();
+  const [typePrice, setTypePrice] = useState<string>();
   const [min, setMin] = useState<number>();
   const [max, setMax] = useState<number>();
 
@@ -47,6 +48,27 @@ const ProductPage = (props: Props) => {
       console.log(error);
     }
   };
+  console.log(typePrice);
+
+  const fetchProudctByPrice = async () => {
+    try {
+      if (typePrice === "3") {
+        const res = await productAPI.getProductPriceIncrease();
+        setProductFilterList(res);
+      } else if (typePrice === "4") {
+        const res = await productAPI.getProductPriceDecrease();
+        setProductFilterList(res);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  useEffect(() => {
+    if (typePrice) {
+      fetchProudctByPrice();
+    }
+  }, [typePrice]);
+
   useEffect(() => {
     fetchProduct();
   }, [valueBrand]);
@@ -131,6 +153,7 @@ const ProductPage = (props: Props) => {
             <select
               id="filter"
               className="border border-mainColor rounded-xl p-1 focus:outline-none focus:shadow-outline text-[gray] mr-8 sm:mr-2"
+              onChange={(e) => setTypePrice(e.target.value)}
             >
               <option className="w-[100px]" value="1">
                 Sắp xếp theo

@@ -6,6 +6,12 @@ const productAPI =  {
     getProductList: () => {
         return axiosClient.get<unknown, Product[]>("/products");
     },
+    getProductPriceIncrease: () => {
+        return axiosClient.get<unknown, Product[]>("/products/increase")
+    },
+    getProductPriceDecrease: () => {
+        return axiosClient.get<unknown, Product[]>("/products/decrease")
+    },
     getProduct: (productID: string) => {
         return axiosClient.get<unknown, Product>(`/products/${productID}`)
     },

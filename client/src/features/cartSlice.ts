@@ -26,8 +26,15 @@ const cartSystem = createSlice({
       }
       state.cart.push(action.payload);
     },
+    RemoveCart: (state, action) => {
+      const newArr = state.cart.filter(
+        (item) => item._id !== action.payload.id
+      );
+      state.cart = newArr;
+      state.total -= 1;
+    },
   },
 });
 
-export const { AddCart } = cartSystem.actions;
+export const { AddCart, RemoveCart } = cartSystem.actions;
 export default cartSystem.reducer;

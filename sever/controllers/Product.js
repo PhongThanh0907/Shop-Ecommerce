@@ -63,8 +63,30 @@ export const getAllProductByType = async (req, res, next) => {
       brand: {
         $in: brands.split(",").map((b) => mongoose.Types.ObjectId(b)),
       },
-      price: { $gt: min | 1000, $lt: max | 10000000 },
+      price: { $gt: min | 1000, $lt: max | 100000000 },
     }).limit(req.query.limit);
+    res.status(200).json(products);
+  } catch (error) {
+    res.status(500).json(error);
+  }
+};
+
+export const getAllProductDecrease = async (req, res, next) => {
+  try {
+    const products = await Product.find()
+      .sort({ price: -1 })
+      .limit(req.query.limit);
+    res.status(200).json(products);
+  } catch (error) {
+    res.status(500).json(error);
+  }
+};
+
+export const getAllProductIncrease = async (req, res, next) => {
+  try {
+    const products = await Product.find()
+      .sort({ price: 1 })
+      .limit(req.query.limit);
     res.status(200).json(products);
   } catch (error) {
     res.status(500).json(error);

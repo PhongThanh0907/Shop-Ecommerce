@@ -4,6 +4,8 @@ import {
   deleteProduct,
   getAllProduct,
   getAllProductByType,
+  getAllProductDecrease,
+  getAllProductIncrease,
   getProduct,
   getProducts,
   updatedProduct,
@@ -22,6 +24,8 @@ router.delete("/:id", deleteProduct);
 //Get
 router.get("/", getAllProduct);
 router.get("/getByBrand", getAllProductByType);
+router.get("/increase", getAllProductIncrease);
+router.get("/decrease", getAllProductDecrease);
 router.get("/:id", getProduct);
 router.get("/find", getProducts);
 //Get All

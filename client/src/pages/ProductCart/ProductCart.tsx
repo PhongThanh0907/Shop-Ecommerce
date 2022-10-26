@@ -1,11 +1,15 @@
 import React from "react";
 import { MdOutlineKeyboardArrowRight } from "react-icons/md";
+import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import { RootState } from "../../app/store";
 import ItemCart from "../../components/ItemCart";
 
 type Props = {};
 
 const ProductCart = (props: Props) => {
+  const { cart, total } = useSelector((state: RootState) => state.cart);
+
   return (
     <div className="w-[80%] m-auto sm:w-[90%]">
       <div>
@@ -25,7 +29,9 @@ const ProductCart = (props: Props) => {
             <h3 className="sm:col-span-2">Tổng tiền</h3>
           </div>
           <hr className="bg-mainGray border-mainGray h-[2px] my-4" />
-          <ItemCart />
+          {cart.map((item) => (
+            <ItemCart key={item._id} item={item} />
+          ))}
           <h1 className="text-right pr-10">
             Tổng tiền tạm tính: <span className="font-bold">41.000.000</span>
           </h1>

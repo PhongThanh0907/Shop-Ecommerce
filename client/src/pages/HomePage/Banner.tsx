@@ -7,6 +7,8 @@ import { Carousel } from "react-responsive-carousel";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../app/store";
 import { getProductList } from "../../features/productSlice";
+import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
 
 const Banner = () => {
   const dataImg = [Banner01, Banner02, Banner03];
@@ -20,24 +22,31 @@ const Banner = () => {
   }, []);
 
   if (isLoading) {
-    return <h1>Loading...</h1>;
+    return (
+      <h1>
+        <Skeleton width={10000} count={3} />
+      </h1>
+    );
   }
   if (error) {
     return <h1>{error}</h1>;
   }
   return (
     <div className="relative">
-      <Carousel showThumbs={false}>
-        {dataImg.map((item, id) => (
-          <img
-            className="h-[100vh] sm:h-[40vh]"
-            key={id}
-            src={item}
-            alt="img"
-          />
-        ))}
-      </Carousel>
-      {}
+      {isLoading ? (
+        <Skeleton count={8} />
+      ) : (
+        <Carousel showThumbs={false}>
+          {dataImg.map((item, id) => (
+            <img
+              className="h-[100vh] sm:h-[40vh]"
+              key={id}
+              src={item}
+              alt="img"
+            />
+          ))}
+        </Carousel>
+      )}
     </div>
   );
 };
