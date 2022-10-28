@@ -8,21 +8,16 @@ import { Product } from "../../interfaces/product";
 import productAPI from "../../services/productAPI";
 
 const ProductPageBrand = () => {
-  const { id } = useParams<{ id?: string | any }>();
-  const [brandDetail, setBrandDetail] = useState<Brand>();
-  const [brandList, setBrandList] = useState<Brand[]>();
-  const [products, setProducts] = useState<Product[]>();
   const [valueBrand, setValueBrand] = useState<string[]>([]);
+  const [min, setMin] = useState<number>();
+  const [max, setMax] = useState<number>();
+  const [typePrice, setTypePrice] = useState<string>();
 
-  const fetchBrand = async () => {
-    try {
-      const res = await productAPI.getBrand(id);
-      setBrandDetail(res);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  const fetchAllBrand = async () => {
+  const [brandList, setBrandList] = useState<Brand[]>();
+  const [productFilterList, setProductFilterList] = useState<Product[]>();
+  const { id } = useParams<{ id?: string | any }>();
+
+  const fetchBrandList = async () => {
     try {
       const res = await productAPI.getBrandList();
       setBrandList(res);
@@ -30,51 +25,35 @@ const ProductPageBrand = () => {
       console.log(error);
     }
   };
-  const fetchProductByBrand = async () => {
-    try {
-      const res = await productAPI.getProductByBrands([id]);
-      setProducts(res);
-    } catch (error) {
-      console.log(error);
-    }
-  };
+
   const fetchProduct = async () => {
     try {
-      if (valueBrand) {
-        const res = await productAPI.getProductByBrands(valueBrand);
-        setProducts(res);
-      } else {
-        fetchProductByBrand();
-      }
+      const res = await productAPI.getProductByType(
+        "",
+        [...valueBrand, id],
+        min,
+        max,
+        typePrice
+      );
+      setProductFilterList(res);
     } catch (error) {
       console.log(error);
     }
   };
-  useEffect(() => {
-    fetchBrand();
-    fetchProductByBrand();
-  }, [id]);
 
   useEffect(() => {
     fetchProduct();
-  }, [valueBrand]);
-
-  useEffect(() => {
-    fetchAllBrand();
-  }, []);
-  console.log(products);
+    fetchBrandList();
+  }, [valueBrand, min, max, typePrice, id]);
 
   return (
     <div className="w-[80%] m-auto sm:w-[90%] sm:m-auto">
-      <div className="style-flex w-[30%] my-6 sm:w-[80%]">
+      <div className="style-flex w-[25%] my-6 sm:w-[80%]">
         <Link to="/">
           <h1>Trang chủ</h1>
         </Link>
-        <MdOutlineKeyboardArrowRight className="text-2xl text-[gray] " />
-        <h1>
-          VGA - Card Màn Hình{" "}
-          <span className="capitalize">{brandDetail?.name}</span>
-        </h1>
+        <MdOutlineKeyboardArrowRight className="text-2xl text-[gray]" />
+        <h1>VGA - Card Màn Hình</h1>
       </div>
       <div className="grid grid-cols-4 gap-8 sm:grid-cols-1 sm:gap-0">
         <div className="col-span-1 p-5 border border-mainGray h-[550px]">
@@ -85,14 +64,27 @@ const ProductPageBrand = () => {
             </div>
             <hr className="bg-mainGray border-mainGray h-[2px] my-4" />
             <h1 className="font-bold">Thương hiệu</h1>
-            <div className="gap-y-2 grid py-4 uppercase">
+            <div className="gap-y-2 grid py-4">
               {brandList?.map((item) => (
                 <div key={item._id}>
                   <input
                     type="checkbox"
-                    id={item.name}
                     name={item.name}
                     value={item.name}
+                    id={item.name}
+                    // onChange={(e) => {
+                    //   if (e.target.checked && !valueBrand.includes(item._id)) {
+                    //     setValueBrand([...valueBrand, item._id]);
+                    //     dispatch(brandFilterChange([...valueBrand, item._id]));
+                    //   } else if (valueBrand.includes(item._id)) {
+                    //     setValueBrand(valueBrand.filter((i) => i !== item._id));
+                    //     dispatch(
+                    //       brandFilterChange(
+                    //         valueBrand.filter((i) => i !== item._id)
+                    //       )
+                    //     );
+                    //   }
+                    // }}
                     onChange={(e) => {
                       if (e.target.checked && !valueBrand.includes(item._id)) {
                         setValueBrand([...valueBrand, item._id]);
@@ -101,10 +93,10 @@ const ProductPageBrand = () => {
                       }
                     }}
                   />
-                  <label className="mx-1 " htmlFor={item.name}>
+                  <label className="mx-1 uppercase" htmlFor={item.name}>
                     {item.name}
                   </label>
-                  <label className="text-[12px] text-[gray]">(6)</label>
+                  <label className="text-[14px] text-[gray]">(6)</label>
                 </div>
               ))}
             </div>
@@ -118,42 +110,49 @@ const ProductPageBrand = () => {
                   type="number"
                   min={1}
                   className="w-[100px] py-1 text-center border border-[gray] text-[gray] sm:w-[120px]"
+                  onChange={(e) => {
+                    setMin(e.target.valueAsNumber);
+                  }}
                 />
               </div>
               <AiOutlineArrowRight />
               <div>
                 <input
                   type="number"
-                  min={1}
+                  max={1000000000}
                   className="w-[100px] py-1 text-center border border-[gray] sm:w-[120px]"
+                  onChange={(e) => setMax(e.target.valueAsNumber)}
                 />
               </div>
             </div>
           </div>
-          <div className="px-6 py-2 bg-mainColor rounded-lg font-bold text-[white] my-8 text-center">
-            <button>Tìm kiếm</button>
+          <div
+            className="px-6 py-2 bg-mainColor rounded-lg font-bold text-[white] my-8 text-center cursor-pointer"
+            onClick={() => fetchProduct()}
+          >
+            Tìm kiếm
           </div>
         </div>
         <div className="w-full col-span-3">
-          <h1 className="text-2xl mb-4 sm:text-xl uppercase">
-            VGA - Card Màn Hình - {brandDetail?.name}
-          </h1>
+          <h1 className="text-2xl mb-4 sm:text-xl">VGA - Card Màn Hình</h1>
           <div className="text-right py-4 bg-mainGray rounded-xl sm:py-2">
             <select
               id="filter"
               className="border border-mainColor rounded-xl p-1 focus:outline-none focus:shadow-outline text-[gray] mr-8 sm:mr-2"
+              onChange={(e) => setTypePrice(e.target.value)}
+              onClick={() => fetchProduct()}
             >
               <option className="w-[100px]" value="1">
                 Sắp xếp theo
               </option>
-              <option value="2">Mặc định</option>
-              <option value="3">Giá: Từ thấp đến cao</option>
-              <option value="4">Giá: Từ cao đến thấp</option>
+              <option value="0">Mặc định</option>
+              <option value="1">Giá: Từ thấp đến cao</option>
+              <option value="-1">Giá: Từ cao đến thấp</option>
             </select>
           </div>
           <div className="grid grid-cols-3 my-6 gap-y-4">
-            {products?.map((item) => (
-              <ItemProduct item={item} idProduct={item._id} key={item._id} />
+            {productFilterList?.map((item) => (
+              <ItemProduct key={item._id} item={item} idProduct={item._id} />
             ))}
           </div>
         </div>

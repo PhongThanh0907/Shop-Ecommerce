@@ -72,25 +72,6 @@ const DetailProduct = () => {
               Tên sản phẩm:{" "}
               <span className="font-normal">{productDetail?.nameProduct}</span>
             </li>
-            {/* <li>
-              Card xử lý đồ họa:{" "}
-              <span className="font-normal">{productDetail?.type}</span>
-            </li>
-            <li>
-              Dung lượng bộ nhớ:{" "}
-              <span className="font-normal">{productDetail?.ram}</span>
-            </li>
-            <li>
-              Cores <span className="font-normal">{productDetail?.cores}</span>
-            </li>
-            <li>
-              Core Clock:{" "}
-              <span className="font-normal">{productDetail?.support}</span>
-            </li>
-            <li>
-              Nguồn cấp:{" "}
-              <span className="font-normal">{productDetail?.power}</span>
-            </li> */}
             <li>
               Độ phân giải tối đa:{" "}
               <span className="font-normal">7680×4320</span>

@@ -25,5 +25,6 @@ const ProductSchema = new mongoose.Schema({
     type: Boolean,
   },
 });
+ProductSchema.index({ name: "text", nameProduct: "text" });
 
 export default mongoose.model("Product", ProductSchema);

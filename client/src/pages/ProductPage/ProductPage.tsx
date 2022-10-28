@@ -1,29 +1,29 @@
 import React, { useEffect, useState } from "react";
 import { AiOutlineArrowRight } from "react-icons/ai";
 import { MdOutlineKeyboardArrowRight } from "react-icons/md";
-import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import { AppDispatch, RootState } from "../../app/store";
 import ItemProduct from "../../components/ItemProduct";
-import { getProductList } from "../../features/productSlice";
 import { Brand } from "../../interfaces/brand";
 import { Product } from "../../interfaces/product";
 import productAPI from "../../services/productAPI";
+import { useLocation } from "react-router-dom";
 
 type Props = {};
 
 const ProductPage = (props: Props) => {
-  const [brandList, setBrandList] = useState<Brand[]>();
   const [valueBrand, setValueBrand] = useState<string[]>([]);
-  const [productFilterList, setProductFilterList] = useState<Product[]>();
-  const [typePrice, setTypePrice] = useState<string>();
   const [min, setMin] = useState<number>();
   const [max, setMax] = useState<number>();
+  const [typePrice, setTypePrice] = useState<string>();
 
-  const { data, error, isLoading } = useSelector(
-    (state: RootState) => state.products
-  );
-  const dispatch = useDispatch<AppDispatch>();
+  const [brandList, setBrandList] = useState<Brand[]>();
+  const [productFilterList, setProductFilterList] = useState<Product[]>();
+  const location = useLocation();
+  const [searchValue, setSearchValue] = useState<string>("");
+
+  useEffect(() => {
+    setSearchValue(location?.state?.searchValue);
+  }, [location?.state?.searchValue]);
 
   const fetchBrandList = async () => {
     try {
@@ -33,50 +33,39 @@ const ProductPage = (props: Props) => {
       console.log(error);
     }
   };
-  console.log(valueBrand);
 
   const fetchProduct = async () => {
-    try {
-      if (valueBrand) {
-        const res = await productAPI.getProductByBrands(valueBrand);
+    if (searchValue) {
+      try {
+        const res = await productAPI.getProductByType(
+          searchValue,
+          valueBrand,
+          min,
+          max,
+          typePrice
+        );
         setProductFilterList(res);
-      } else {
-        const res = await productAPI.getProductList();
-        setProductFilterList(res);
+      } catch (error) {
+        console.log(error);
       }
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  console.log(typePrice);
-
-  const fetchProudctByPrice = async () => {
-    try {
-      if (typePrice === "3") {
-        const res = await productAPI.getProductPriceIncrease();
-        setProductFilterList(res);
-      } else if (typePrice === "4") {
-        const res = await productAPI.getProductPriceDecrease();
-        setProductFilterList(res);
-      }
-    } catch (error) {
-      console.log(error);
+    } else {
+      const res = await productAPI.getProductByType(
+        "",
+        valueBrand,
+        min,
+        max,
+        typePrice
+      );
+      setProductFilterList(res);
     }
   };
   useEffect(() => {
-    if (typePrice) {
-      fetchProudctByPrice();
-    }
-  }, [typePrice]);
+    fetchBrandList();
+  }, []);
 
   useEffect(() => {
     fetchProduct();
-  }, [valueBrand]);
-
-  useEffect(() => {
-    fetchBrandList();
-    dispatch(getProductList());
-  }, []);
+  }, [valueBrand, min, max, typePrice, typePrice, searchValue]);
 
   return (
     <div className="w-[80%] m-auto sm:w-[90%] sm:m-auto">
@@ -104,6 +93,19 @@ const ProductPage = (props: Props) => {
                     name={item.name}
                     value={item.name}
                     id={item.name}
+                    // onChange={(e) => {
+                    //   if (e.target.checked && !valueBrand.includes(item._id)) {
+                    //     setValueBrand([...valueBrand, item._id]);
+                    //     dispatch(brandFilterChange([...valueBrand, item._id]));
+                    //   } else if (valueBrand.includes(item._id)) {
+                    //     setValueBrand(valueBrand.filter((i) => i !== item._id));
+                    //     dispatch(
+                    //       brandFilterChange(
+                    //         valueBrand.filter((i) => i !== item._id)
+                    //       )
+                    //     );
+                    //   }
+                    // }}
                     onChange={(e) => {
                       if (e.target.checked && !valueBrand.includes(item._id)) {
                         setValueBrand([...valueBrand, item._id]);
@@ -129,7 +131,9 @@ const ProductPage = (props: Props) => {
                   type="number"
                   min={1}
                   className="w-[100px] py-1 text-center border border-[gray] text-[gray] sm:w-[120px]"
-                  onChange={(e) => setMin(e.target.valueAsNumber)}
+                  onChange={(e) => {
+                    setMin(e.target.valueAsNumber);
+                  }}
                 />
               </div>
               <AiOutlineArrowRight />
@@ -143,8 +147,11 @@ const ProductPage = (props: Props) => {
               </div>
             </div>
           </div>
-          <div className="px-6 py-2 bg-mainColor rounded-lg font-bold text-[white] my-8 text-center">
-            <button>Tìm kiếm</button>
+          <div
+            className="px-6 py-2 bg-mainColor rounded-lg font-bold text-[white] my-8 text-center cursor-pointer"
+            onClick={() => fetchProduct()}
+          >
+            Tìm kiếm
           </div>
         </div>
         <div className="w-full col-span-3">
@@ -158,33 +165,15 @@ const ProductPage = (props: Props) => {
               <option className="w-[100px]" value="1">
                 Sắp xếp theo
               </option>
-              <option value="2">Mặc định</option>
-              <option value="3">Giá: Từ thấp đến cao</option>
-              <option value="4">Giá: Từ cao đến thấp</option>
+              <option value="0">Mặc định</option>
+              <option value="1">Giá: Từ thấp đến cao</option>
+              <option value="-1">Giá: Từ cao đến thấp</option>
             </select>
           </div>
           <div className="grid grid-cols-3 my-6 gap-y-4">
-            {valueBrand.length !== 0 ? (
-              <>
-                {productFilterList?.map((item) => (
-                  <ItemProduct
-                    key={item._id}
-                    item={item}
-                    idProduct={item._id}
-                  />
-                ))}
-              </>
-            ) : (
-              <>
-                {data.map((item) => (
-                  <ItemProduct
-                    key={item._id}
-                    item={item}
-                    idProduct={item._id}
-                  />
-                ))}
-              </>
-            )}
+            {productFilterList?.map((item) => (
+              <ItemProduct key={item._id} item={item} idProduct={item._id} />
+            ))}
           </div>
         </div>
       </div>

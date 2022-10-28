@@ -44,62 +44,30 @@ export const getProduct = async (req, res, next) => {
   }
 };
 
-export const getAllProduct = async (req, res, next) => {
-  try {
-    const products = await Product.find();
-    res.status(200).json(products);
-  } catch (error) {
-    res.status(500).json(error);
-  }
-};
-
-export const getAllProductByType = async (req, res, next) => {
-  const { min, max, brands } = req.query;
-  console.log(brands);
-  console.log(min);
-  console.log(max);
-  try {
-    const products = await Product.find({
-      brand: {
-        $in: brands.split(",").map((b) => mongoose.Types.ObjectId(b)),
-      },
-      price: { $gt: min | 1000, $lt: max | 100000000 },
-    }).limit(req.query.limit);
-    res.status(200).json(products);
-  } catch (error) {
-    res.status(500).json(error);
-  }
-};
-
-export const getAllProductDecrease = async (req, res, next) => {
-  try {
-    const products = await Product.find()
-      .sort({ price: -1 })
-      .limit(req.query.limit);
-    res.status(200).json(products);
-  } catch (error) {
-    res.status(500).json(error);
-  }
-};
-
-export const getAllProductIncrease = async (req, res, next) => {
-  try {
-    const products = await Product.find()
-      .sort({ price: 1 })
-      .limit(req.query.limit);
-    res.status(200).json(products);
-  } catch (error) {
-    res.status(500).json(error);
-  }
-};
-
 export const getProducts = async (req, res, next) => {
-  const { min, max, ...others } = req.query;
+  const { searchValue, min, max, brands, sort } = req.query;
+
+  const search = {};
+
+  if (min && max) search.price = { $gt: min, $lt: max };
+
+  if (brands)
+    search.brand = {
+      $in: brands.split(",").map((b) => mongoose.Types.ObjectId(b)),
+    };
+
+  let searchInput = {};
+
+  if (searchValue) searchInput = { $text: { $search: searchValue } };
+
+  const sortParams = {};
+  if (sort) sortParams.price = sort;
   try {
-    const products = await Product.find({
-      ...others,
-      price: { $gt: min, $lt: max },
-    }).limit(req.query.limit);
+    const products = await Product.find(search)
+      .find(searchInput)
+      .sort(sortParams)
+      .limit(req.query.limit);
+    console.log(products);
     res.status(200).json(products);
   } catch (error) {
     res.status(500).json(error);

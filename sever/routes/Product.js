@@ -2,10 +2,6 @@ import express from "express";
 import {
   createProduct,
   deleteProduct,
-  getAllProduct,
-  getAllProductByType,
-  getAllProductDecrease,
-  getAllProductIncrease,
   getProduct,
   getProducts,
   updatedProduct,
@@ -22,12 +18,13 @@ router.put("/:id", updatedProduct);
 router.delete("/:id", deleteProduct);
 
 //Get
-router.get("/", getAllProduct);
-router.get("/getByBrand", getAllProductByType);
-router.get("/increase", getAllProductIncrease);
-router.get("/decrease", getAllProductDecrease);
+router.get("/", getProducts);
+
+// router.get("/getByBrand", getAllProduct);
+// router.get("/increase", getAllProductIncrease);
+// router.get("/decrease", getAllProductDecrease);
 router.get("/:id", getProduct);
-router.get("/find", getProducts);
+// router.get("/find", getProducts);
 //Get All
 
 //Get By Type

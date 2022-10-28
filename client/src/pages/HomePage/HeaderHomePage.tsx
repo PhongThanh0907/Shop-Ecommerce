@@ -13,12 +13,13 @@ import { Brand } from "../../interfaces/brand";
 const HeaderHomePage = () => {
   const [openMenu, setOpenMenu] = useState(false);
   const [openMenuUser, setOpenMenuUser] = useState(false);
+  const [searchValue, setSearchValue] = useState<string>();
   const [brand, setBrand] = useState<Brand[]>();
   const navigate = useNavigate();
   const { cart, total } = useSelector((state: RootState) => state.cart);
 
   const handleClick = () => {
-    navigate(`/card-man-hinh/`, { state: { brand } });
+    navigate(`/card-man-hinh/`, { state: { searchValue } });
   };
 
   const getBrandList = async () => {
@@ -32,6 +33,9 @@ const HeaderHomePage = () => {
   useEffect(() => {
     getBrandList();
   }, []);
+
+  console.log(searchValue);
+
   return (
     <div className="bg-mainColor text-[white] font-bold sm:my-4 sm:py-2">
       <div className="style-default sm:grid sm:grid-cols-1">
@@ -90,8 +94,12 @@ const HeaderHomePage = () => {
             className="style-input focus:outline-none focus:shadow-outline"
             type="text"
             placeholder="Nội dung tìm kiếm"
+            onChange={(e) => setSearchValue(e.target.value)}
           />
-          <div className="style-input-right hover:bg-[black] cursor-pointer">
+          <div
+            className="style-input-right hover:bg-[black] cursor-pointer"
+            onClick={() => handleClick()}
+          >
             <HiSearch />
           </div>
         </div>
