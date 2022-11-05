@@ -1,14 +1,17 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { Item } from "../interfaces/item";
 import { Product } from "../interfaces/product";
 
 interface CartsState {
-  cart: Product[];
+  cart: Item[];
   total: number;
+  priceProduct: number;
 }
 
 const initialState: CartsState = {
   cart: [],
   total: 0,
+  priceProduct: 0,
 };
 
 const cartSystem = createSlice({
@@ -16,25 +19,43 @@ const cartSystem = createSlice({
   initialState,
   reducers: {
     AddCart: (state, action) => {
-      const find = state.cart.findIndex(
-        (item) => item._id === action.payload.id
+      console.log("add cart", action.payload);
+
+      const index = state.cart.findIndex(
+        (item) => item._id === action.payload._id
       );
-      if (find > 0) {
-        state.cart[find].quantity += 1;
+      if (index === -1) {
+        const temp = { ...action.payload,totalCount: action.payload.price , numberCount: 1 };
+        
+        return {
+          ...state,
+          cart: [...state.cart, temp],          
+        };
       } else {
-        state.total += 1;
+        state.cart[index].numberCount += 1;
+        state.cart[index].totalCount = action.payload.price * state.cart[index].numberCount
+        state.priceProduct = action.payload.price + state.cart[index].totalCount;
       }
-      state.cart.push(action.payload);
     },
     RemoveCart: (state, action) => {
       const newArr = state.cart.filter(
         (item) => item._id !== action.payload.id
       );
       state.cart = newArr;
-      state.total -= 1;
+    },
+    UpdateNumberCount: (state, action) => {
+      const index = state.cart.findIndex(
+        (item) => item._id === action.payload._id
+      );
+      if(index >= 0) {
+        state.cart[index].numberCount = action.payload.numberCountValue
+        console.log(state.cart[index].price)
+        console.log(state.cart[index].numberCount)
+        state.cart[index].totalCount = action.payload.numberCountValue * state.cart[index].price
+      }
     },
   },
 });
 
-export const { AddCart, RemoveCart } = cartSystem.actions;
+export const { AddCart, RemoveCart, UpdateNumberCount } = cartSystem.actions;
 export default cartSystem.reducer;

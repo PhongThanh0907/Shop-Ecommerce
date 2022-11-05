@@ -8,13 +8,16 @@ import { MdAddShoppingCart, MdOutlineCancel } from "react-icons/md";
 import { Carousel } from "react-responsive-carousel";
 import { Product } from "../../interfaces/product";
 import productAPI from "../../services/productAPI";
+import { useDispatch } from "react-redux";
+import { AddCart, UpdateNumberCount } from "../../features/cartSlice";
 
 const DetailProduct = () => {
   const { id } = useParams<{ id?: string | any }>();
   const dataImg = [img1, img2, img3];
-  const [numberCount, setNumberCount] = useState(0);
+  const [numberCountValue, setNumberCountValue] = useState(1);
   const [openMenuCart, setOpenMenuCart] = useState(false);
   const [productDetail, setProductDetail] = useState<Product>();
+  const dispatch = useDispatch();
 
   const fetchProduct = async () => {
     try {
@@ -32,7 +35,7 @@ const DetailProduct = () => {
   console.log(productDetail);
 
   const totalCount = () => {
-    return numberCount * (productDetail?.price || 1000);
+    return numberCountValue * (productDetail?.price || 1000);
   };
   return (
     <div>
@@ -105,7 +108,13 @@ const DetailProduct = () => {
               min={1}
               placeholder="1"
               className="w-[80%] py-1 text-center border border-[gray] text-[gray] rounded-2xl sm:w-[30%]"
-              onChange={(e) => setNumberCount(parseInt(e.target.value))}
+              defaultValue="1"
+              onChange={(e) => setNumberCountValue(parseInt(e.target.value))}
+              onClick={() =>
+                dispatch(
+                  UpdateNumberCount({ ...productDetail, numberCountValue })
+                )
+              }
             />
             <div
               className="bg-mainColor rounded-3xl my-4 cursor-pointer hover:bg-[black] duration-300"
@@ -149,7 +158,7 @@ const DetailProduct = () => {
                     {productDetail?.nameProduct}
                   </h1>
                   <h2 className="text-[gray] my-2">
-                    {numberCount} ×{" "}
+                    {numberCountValue} ×{" "}
                     {productDetail?.price?.toLocaleString("vn-VN")}đ
                   </h2>
                 </div>

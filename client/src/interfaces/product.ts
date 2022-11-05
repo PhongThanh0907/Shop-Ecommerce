@@ -7,6 +7,6 @@ export interface Product {
   description: string;
   promotion: boolean;
   oldPrice: string;
-  quantity: number;
   bestSell: boolean;
+  quantity:number;
 }

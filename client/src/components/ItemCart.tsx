@@ -1,8 +1,7 @@
-import React, { useState } from "react";
-import { useDispatch } from "react-redux";
-import { AppDispatch } from "../app/store";
-import img1 from "../assets/resizer.png";
-import { RemoveCart } from "../features/cartSlice";
+import React, { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "../app/store";
+import { AddCart, RemoveCart, UpdateNumberCount } from "../features/cartSlice";
 import { Product } from "../interfaces/product";
 
 type Props = {
@@ -10,12 +9,17 @@ type Props = {
 };
 
 const ItemCart = (props: Props) => {
-  const [numberCount, setNumberCount] = useState(1);
+  const [numberCountValue, setNumberCountValue] = useState(1);
   const dispatch = useDispatch<AppDispatch>();
+  const { cart } = useSelector((state: RootState) => state.cart);
 
-  const [test, setTest] = useState<string>();
-  console.log(test);
-  // useEffect(() => {});
+  console.log(numberCountValue);
+  let index = cart.findIndex((item) => item._id === props.item._id);
+  const newArr = { ...props.item, numberCountValue };
+  console.log(newArr);
+  useEffect(() => {
+    AddCart(props.item);
+  }, [numberCountValue]);
 
   return (
     <div className="grid grid-cols-8 sm:text-xs relative">
@@ -33,12 +37,16 @@ const ItemCart = (props: Props) => {
           type="number"
           className="border border-mainGray w-[70%] rounded-2xl pl-6 py-1 text-[gray] focus:outline-none focus:shadow-outline"
           min={1}
-          onChange={(e) => setNumberCount(parseInt(e.target.value))}
-          defaultValue="1"
+          onChange={(e) => setNumberCountValue(parseInt(e.target.value))}
+          onClick={() =>
+            dispatch(UpdateNumberCount({ ...props.item, numberCountValue }))
+          }
+          defaultValue={`${cart[index].numberCount}`}
         />
       </div>
       <h2 className="flex items-center sm:col-span-2">
-        {(numberCount * props.item.price).toLocaleString("vi-VN")}đ
+        {/* {(numberCountValue * props.item.price).toLocaleString("vi-VN")}đ */}
+        {cart[index].totalCount.toLocaleString("vn-Vn")}đ
       </h2>
       <hr className="bg-mainGray border-mainGray h-[2px] my-4 col-span-8" />
       <button

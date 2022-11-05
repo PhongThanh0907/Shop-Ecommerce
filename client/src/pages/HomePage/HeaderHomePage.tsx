@@ -16,7 +16,8 @@ const HeaderHomePage = () => {
   const [searchValue, setSearchValue] = useState<string>();
   const [brand, setBrand] = useState<Brand[]>();
   const navigate = useNavigate();
-  const { cart, total } = useSelector((state: RootState) => state.cart);
+  const { cart } = useSelector((state: RootState) => state.cart);
+  const { login } = useSelector((state: RootState) => state.user);
 
   const handleClick = () => {
     navigate(`/card-man-hinh/`, { state: { searchValue } });
@@ -104,10 +105,17 @@ const HeaderHomePage = () => {
           </div>
         </div>
         <div className="flex items-center gap-8 relative sm:py-3 sm:m-auto">
-          <BiUserCircle
-            onClick={() => setOpenMenuUser(!openMenuUser)}
-            className="text-3xl cursor-pointer relative"
-          />
+          {login?.currentUser ? (
+            <>
+              <h1>Xin chào, {login.userName}</h1>
+            </>
+          ) : (
+            <BiUserCircle
+              onClick={() => setOpenMenuUser(!openMenuUser)}
+              className="text-3xl cursor-pointer relative"
+            />
+          )}
+
           {!openMenuUser ? (
             <></>
           ) : (
@@ -139,7 +147,13 @@ const HeaderHomePage = () => {
               <div className="relative ">
                 <HiOutlineShoppingBag className="text-3xl" />
                 <div className="absolute rounded-full px-1 bg-[#333e48] text-sm right-0 top-3">
-                  <h1>{total}</h1>
+                  <h1>
+                    {cart.length < 1
+                      ? 0
+                      : cart
+                          .map((i) => i.numberCount)
+                          .reduce((total, cv) => total + cv)}
+                  </h1>
                 </div>
               </div>
               <h1>Giỏ hàng</h1>

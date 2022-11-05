@@ -5,6 +5,7 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import productsRoute from "./routes/Product.js";
 import brandsRoute from "./routes/Brand.js";
+import authsRoute from "./routes/Auth.js";
 
 const app = express();
 dotenv.config();
@@ -26,6 +27,7 @@ app.use(express.json());
 
 app.use("/api/products", productsRoute);
 app.use("/api/brands", brandsRoute);
+app.use("/api/auths", authsRoute);
 
 app.use((error, req, res, next) => {
   const errorStatus = error.status || 500;

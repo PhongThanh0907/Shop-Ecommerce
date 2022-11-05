@@ -35,7 +35,9 @@ const ItemProduct = (props: Props) => {
             </h2>
           </div>
           <div
-            onClick={() => dispatch(AddCart(props.item))}
+            onClick={() => {
+              dispatch(AddCart(props.item));
+            }}
             className="absolute bottom-4 text-2xl right-4 p-2 rounded-full bg-mainGray text-[white] cursor-pointer hover:bg-mainColor sm:text-sm sm:right-1 sm:bottom-4"
           >
             <BsCartPlus />
